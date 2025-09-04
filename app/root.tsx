@@ -9,7 +9,16 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-
+import { WagmiConfig, createConfig } from "wagmi";
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
+import { mainnet, sepolia } from "wagmi/chains";
+import { defineChain } from "viem";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -22,7 +31,22 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+const anvil = defineChain({
+  id: 31337,
+  name: "Anvil Local",
+  nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["http://127.0.0.1:8545"] },
+    public: { http: ["http://127.0.0.1:8545"] },
+  },
+});
 
+const config = getDefaultConfig({
+  appName: "My ERC1155 Game Items",
+  projectId: "YOUR_WALLETCONNECT_PROJECT_ID",
+  chains: [anvil, mainnet, sepolia],
+});
+const queryClient = new QueryClient();
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -33,7 +57,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <ToastContainer />
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <div className="flex flex-row justify-end p-2 bg-orange-200">
+                <ConnectButton />
+              </div>
+              {children}
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

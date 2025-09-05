@@ -7,10 +7,11 @@ import {
   usdtAddress,
   usdtAbi,
   wethAbi,
+  ERC20Abi,
   routerAbi,
   //@ts-ignore
 } from "constants/contract.js";
-
+import { parseUnits } from "viem";
 export default function Liquidity() {
   const [tokenA, setTokenA] = useState(
     "0x5FbDB2315678afecb367f032d93F642f64180aa3"
@@ -53,17 +54,17 @@ export default function Liquidity() {
     try {
       await usdtApprovalwriteAsync({
         address: tokenB,
-        abi: usdtAbi, // or token ABI
+        abi: ERC20Abi, // or token ABI
         functionName: "approve",
-        args: [routerAddress, BigInt(amountB)],
+        args: [routerAddress, parseUnits(amountB, 18)],
       });
       await ethApprovalwriteAsync({
         address: tokenA,
-        abi: wethAbi, // or token ABI
+        abi: ERC20Abi, // or token ABI
         functionName: "approve",
-        args: [routerAddress, BigInt(amountA)],
+        args: [routerAddress, parseUnits(amountA, 18)],
       });
-      toast.info("Approved token A");
+
       await writeContractAsync({
         address: routerAddress,
         abi: routerAbi,
@@ -71,8 +72,8 @@ export default function Liquidity() {
         args: [
           tokenA,
           tokenB,
-          BigInt(amountA), // amounts must be passed as uint
-          BigInt(amountB),
+          parseUnits(amountA, 18), // amounts must be passed as uint
+          parseUnits(amountB, 18),
         ],
       });
       toast.info("Adding liquidity...");

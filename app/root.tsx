@@ -19,6 +19,7 @@ import { WagmiProvider } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router";
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -61,8 +62,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>
-              <div className="flex flex-row justify-end p-2 bg-orange-200">
-                <ConnectButton />
+              <div className="flex flex-row justify-between items-center p-2 bg-orange-200">
+                <div className="space-x-3">
+                  <Link to="/">Home</Link>
+                  <Link to="/AddLiquidity">Add Liquidity</Link>
+                  <Link to="/swap">Swap Tokens</Link>
+                  <Link to="/RemoveLiquidity">Remove Liquidity</Link>
+                </div>
+                <div>
+                  <ConnectButton />
+                </div>
               </div>
               {children}
             </RainbowKitProvider>
